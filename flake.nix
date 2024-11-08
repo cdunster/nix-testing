@@ -8,7 +8,7 @@
     };
   };
 
-  outputs = { ... }@inputs: {
+  outputs = { self, ... }@inputs: {
     nixosConfigurations.test-vm = inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -23,6 +23,11 @@
       rustFromFile = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
     in
     {
+      apps.test-vm = {
+        type = "app";
+        program = "${self.nixosConfigurations.test-vm.config.system.build.vm}/bin/run-nixos-vm";
+      };
+
       devShells.default = pkgs.mkShell {
         packages = [
           rustFromFile
