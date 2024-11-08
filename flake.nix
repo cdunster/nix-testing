@@ -31,5 +31,14 @@
         RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
         QEMU_NET_OPTS = "hostfwd=tcp::2221-:22"; # Forward VM SSH port to host port 2221
       };
+
+      packages.default = pkgs.rustPlatform.buildRustPackage {
+        pname = "test-scenario";
+        version = "0.1.0";
+        src = ./.;
+        cargoLock = {
+          lockFile = ./Cargo.lock;
+        };
+      };
     });
 }
