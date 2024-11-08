@@ -7,6 +7,13 @@
 
   # Configuration when building with build-vm
   virtualisation.vmVariant.virtualisation = {
+    forwardPorts = [
+      {
+        from = "host";
+        host.port = 2221;
+        guest.port = 22;
+      }
+    ];
     memorySize = 2048; # MB
     cores = 3;
     graphics = false;
