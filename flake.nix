@@ -36,13 +36,30 @@
         RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
       };
 
-      packages.default = pkgs.rustPlatform.buildRustPackage {
-        pname = "test-scenario";
-        version = "0.1.0";
-        src = ./.;
-        cargoLock = {
-          lockFile = ./Cargo.lock;
+      packages = {
+        default = pkgs.rustPlatform.buildRustPackage {
+          pname = "test-scenario";
+          version = "0.1.0";
+          src = ./.;
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
         };
+
+        run-on-rpi =
+          let
+            target = "user@192.168.178.31";
+          in
+          pkgs.writeShellApplication {
+            name = "run-on-rpi";
+            text = ''
+              echo "copy to RPi"
+              nix copy --to ssh://${target} ${self.packages.aarch64-linux.default}
+
+              echo "running on RPi"
+              ssh ${target} ${self.packages.aarch64-linux.default}/bin/test-scenario
+            '';
+          };
       };
     });
 }
