@@ -8,14 +8,7 @@
     };
   };
 
-  outputs = { self, ... }@inputs: {
-    nixosConfigurations.test-vm = inputs.nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ./nixos/configuration.nix
-      ];
-    };
-  } // inputs.flake-utils.lib.eachDefaultSystem (system:
+  outputs = { self, ... }@inputs: inputs.flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = inputs.nixpkgs.legacyPackages.${system}.appendOverlays [
         inputs.rust-overlay.overlays.default
@@ -23,11 +16,6 @@
       rustFromFile = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
     in
     {
-      apps.test-vm = {
-        type = "app";
-        program = "${self.nixosConfigurations.test-vm.config.system.build.vm}/bin/run-nixos-vm";
-      };
-
       devShells.default = pkgs.mkShell {
         packages = [
           rustFromFile
